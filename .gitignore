@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.vercel/
+*.log
+
+frontend/node_modules/
+frontend/dist/
+frontend/.vercel/
+frontend/vite.log
+frontend/qa-screens/
+
+.DS_Store
+Thumbs.db
