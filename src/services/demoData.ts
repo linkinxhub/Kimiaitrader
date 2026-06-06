@@ -21,7 +21,7 @@ export const DEMO_SIGNALS: AISignal[] = [
       "RSI au-dessus de 50, momentum haussier encore sain.",
       "MACD positif, l'impulsion reste constructive.",
       "EMA rapide au-dessus de l'EMA lente, biais directionnel haussier.",
-      "ATR modéré, volatilité gérable pour un setup swing court.",
+      "ATR modere, volatilite gerable pour un setup swing court.",
     ],
   },
   {
@@ -34,16 +34,16 @@ export const DEMO_SIGNALS: AISignal[] = [
     stopLoss: 67110,
     takeProfits: [69100, 69850, 70740],
     riskRewardRatio: 1.9,
-    riskLevel: "Elevé",
+    riskLevel: "Eleve",
     source: "Mode-Demo",
     timeframe: "M30",
     generatedAt: "2026-06-05T07:35:00.000Z",
     indicators: { rsi: 49, macd: 0.42, emaFast: 68210, emaSlow: 68180, atr: 1250 },
     explanation: [
-      "RSI proche de 50, marché en équilibre et sans avantage clair.",
-      "MACD légèrement positif, mais la pente reste prudente.",
-      "EMAs presque plates, ce qui suggère une consolidation.",
-      "ATR élevé, mieux vaut attendre la cassure confirmée.",
+      "RSI proche de 50, marche en equilibre et sans avantage clair.",
+      "MACD legerement positif, mais la pente reste prudente.",
+      "EMAs presque plates, ce qui suggere une consolidation.",
+      "ATR eleve, mieux vaut attendre la cassure confirmee.",
     ],
   },
   {
@@ -62,16 +62,16 @@ export const DEMO_SIGNALS: AISignal[] = [
     generatedAt: "2026-06-05T07:42:00.000Z",
     indicators: { rsi: 43, macd: -0.26, emaFast: 1.0869, emaSlow: 1.0882, atr: 0.0041 },
     explanation: [
-      "RSI sous 50, pression vendeuse toujours présente.",
-      "MACD négatif, l'élan baissier continue de dominer.",
+      "RSI sous 50, pression vendeuse toujours presente.",
+      "MACD negatif, l'elan baissier continue de dominer.",
       "EMA rapide sous l'EMA lente, structure de tendance vendeuse.",
-      "ATR contenu, ce qui rend la gestion du risque plus précise.",
+      "ATR contenu, ce qui rend la gestion du risque plus precise.",
     ],
   },
 ];
 
-export function isDemoMode(user: AuthUser | null) {
-  return !!user && user.pack === "free" && user.role !== "admin";
+export function isDemoMode(_user: AuthUser | null) {
+  return false;
 }
 
 export function mapDemoSignals() {

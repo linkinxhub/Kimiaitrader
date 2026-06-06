@@ -1,4 +1,4 @@
-import type { Pack, AssetQuote, SiteUpdate } from "@/types";
+import type { AssetQuote, Pack, SiteUpdate } from "@/types";
 
 export const PACK_ORDER: Pack[] = ["free", "pro", "expert", "institutional"];
 
@@ -6,14 +6,14 @@ export const PACK_LABELS: Record<Pack, string> = {
   free: "Free",
   pro: "Pro",
   expert: "Expert",
-  institutional: "Institutionnel",
+  institutional: "Institutional",
 };
 
 export const PACK_COLORS: Record<Pack, string> = {
-  free: "text-free",
-  pro: "text-pro",
-  expert: "text-expert",
-  institutional: "text-institutional",
+  free: "text-slate-300",
+  pro: "text-amber-300",
+  expert: "text-teal-300",
+  institutional: "text-rose-300",
 };
 
 export const DEMO_QUOTES: AssetQuote[] = [
@@ -58,23 +58,23 @@ export const DEMO_QUOTES: AssetQuote[] = [
 export const DEFAULT_UPDATES: SiteUpdate[] = [
   {
     id: "up_1",
-    title: "Nouveau moteur de signaux IA multi-actifs",
-    description: "Le radar analyse désormais crypto, forex et métaux sur le même flux de décision.",
+    title: "Live market backbone redesigned",
+    description: "The new workspace now prioritizes live Binance, Frankfurter, and gold feeds with tighter fallback handling.",
     category: "Produit",
-    publishedAt: "2026-06-01T08:30:00.000Z",
+    publishedAt: "2026-06-05T08:30:00.000Z",
   },
   {
     id: "up_2",
-    title: "Centre OANDA prêt pour la connexion broker",
-    description: "Les utilisateurs peuvent tester leur clé OANDA et préparer leur flux forex en pratique.",
-    category: "Trading",
-    publishedAt: "2026-05-28T13:10:00.000Z",
+    title: "Landing and admin are now synchronized",
+    description: "Pricing, hero content, and public updates are driven from the same admin-controlled settings layer.",
+    category: "Business",
+    publishedAt: "2026-06-04T13:10:00.000Z",
   },
   {
     id: "up_3",
-    title: "Renforcement des options de sécurité",
-    description: "2FA, OTP, limitation des tentatives et détection IP sont maintenant pilotables côté admin.",
-    category: "Sécurité",
-    publishedAt: "2026-05-23T18:45:00.000Z",
+    title: "Gold desk refined for live execution",
+    description: "The XAU control room now exposes clearer bias, levels, and source visibility for premium users.",
+    category: "Trading",
+    publishedAt: "2026-06-03T18:45:00.000Z",
   },
 ];

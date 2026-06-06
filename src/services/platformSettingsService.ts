@@ -1,4 +1,4 @@
-import type { PlatformSettings, PackPrices } from "@/types";
+import type { PackPrices, PlatformSettings } from "@/types";
 import { readStorage, writeStorage } from "@/lib/utils";
 
 const SETTINGS_KEY = "xtrendai_platform_settings";
@@ -20,7 +20,7 @@ const yearlyPrices: PackPrices = {
 
 const DEFAULT_SETTINGS: PlatformSettings = {
   platformName: "XTrendAI Pro",
-  slogan: "Le poste de commandement IA pour vos décisions de trading",
+  slogan: "Plateforme de trading IA live, claire, rapide et pilotable",
   maintenanceMode: false,
   allowNewRegistrations: true,
   realTimeSignals: true,
@@ -34,10 +34,30 @@ const DEFAULT_SETTINGS: PlatformSettings = {
   detectSuspiciousIP: true,
   packPrices: monthlyPrices,
   packPricesYearly: yearlyPrices,
+  heroBadge: "Live trading workspace",
+  heroTitle: "Une salle de marche IA plus nette, plus fluide, et connectee a des donnees reelles.",
+  heroDescription:
+    "XTrendAI Pro centralise signaux, actifs live, suivi XAU/USD, journal, alertes et controle business dans une seule interface statique mais vraiment exploitable.",
+  primaryCtaLabel: "Commencer maintenant",
+  secondaryCtaLabel: "Voir la plateforme",
+  finalCtaTitle: "Passez d'une lecture du marche a un process d'execution repetable.",
+  finalCtaDescription:
+    "Commencez gratuitement, activez les packs live quand vous etes pret, puis harmonisez le discours public et les prix depuis l'admin panel.",
+  controlPanelLabel: "Control room",
+  liveStatusLabel: "LIVE DATA",
+  heroMetrics: [
+    { label: "Sources live", value: "4 APIs", note: "crypto, forex, gold" },
+    { label: "Signaux IA", value: "Temps reel", note: "fallback inclus" },
+    { label: "Pack Pro", value: "79 EUR", note: "acces live" },
+  ],
 };
 
 function dispatchSettingsEvent(settings: PlatformSettings) {
   window.dispatchEvent(new CustomEvent(SETTINGS_EVENT, { detail: settings }));
+}
+
+export function getDefaultPlatformSettings() {
+  return DEFAULT_SETTINGS;
 }
 
 export function getPlatformSettings() {

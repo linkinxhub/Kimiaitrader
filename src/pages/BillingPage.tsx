@@ -1,28 +1,47 @@
-import { AppPageFrame } from "@/pages/page-helpers";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getPlatformSettings } from "@/services/platformSettingsService";
-import { redirectToCheckout } from "@/services/stripeService";
-import { formatCurrency } from "@/lib/format";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
+import { AppPageFrame, PricingSummary } from "@/pages/page-helpers";
 import { Button, Card } from "@/components/ui/primitives";
 
 export default function BillingPage() {
-  const { user } = useAuth();
-  const settings = getPlatformSettings();
+  const { user, updatePack } = useAuth();
+  const settings = usePlatformSettings();
+  const [mode, setMode] = useState<"monthly" | "yearly">("monthly");
+
+  const priceSet = mode === "monthly" ? settings.packPrices : settings.packPricesYearly;
 
   return (
     <AppPageFrame
       title="Billing"
-      description="Activation locale immédiate si Stripe n’est pas configuré, ou redirection vers vos payment links."
+      description="La facturation reprend exactement les prix du panneau admin, sans divergence entre la vitrine et l'espace utilisateur."
+      action={
+        <div className="flex gap-2">
+          <Button variant={mode === "monthly" ? "primary" : "secondary"} onClick={() => setMode("monthly")}>
+            Mensuel
+          </Button>
+          <Button variant={mode === "yearly" ? "primary" : "secondary"} onClick={() => setMode("yearly")}>
+            Annuel
+          </Button>
+        </div>
+      }
     >
-      <div className="grid gap-4 xl:grid-cols-4">
-        {(["free", "pro", "expert", "institutional"] as const).map((pack) => (
-          <Card key={pack} className="space-y-4">
-            <p className="font-display text-2xl text-white">{pack}</p>
-            <p className="font-display text-4xl text-white">{formatCurrency(settings.packPrices[pack])}</p>
-            <Button onClick={() => redirectToCheckout(pack)} disabled={user?.pack === pack}>Activer</Button>
-          </Card>
-        ))}
-      </div>
+      <Card className="space-y-4">
+        <p className="font-display text-3xl tracking-[-0.05em] text-white">Pack actif</p>
+        <p className="text-sm leading-7 text-slate-400">
+          Compte courant: {user?.role === "admin" ? "Admin" : user?.pack ?? "free"}. Les mises a niveau se repercutent instantanement en local.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={() => updatePack("pro", "active")}>Activer Pro</Button>
+          <Button variant="secondary" onClick={() => updatePack("expert", "active")}>
+            Activer Expert
+          </Button>
+          <Button variant="secondary" onClick={() => updatePack("institutional", "active")}>
+            Activer Institutional
+          </Button>
+        </div>
+      </Card>
+      <PricingSummary prices={priceSet} yearlyPrices={settings.packPricesYearly} />
     </AppPageFrame>
   );
 }

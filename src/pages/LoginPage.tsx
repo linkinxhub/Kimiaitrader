@@ -1,63 +1,76 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Badge, Button, Card, Input } from "@/components/ui/primitives";
+import { Badge, Button, Card, Input, SectionHeader } from "@/components/ui/primitives";
+
+const quickAccounts: Array<"free" | "pro" | "expert" | "institutional" | "admin"> = ["free", "pro", "expert", "institutional", "admin"];
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const { login, loginError, quickLogin, adminPinLogin } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pin, setPin] = useState("");
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12">
-      <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-[1fr_0.95fr]">
+    <div className="mx-auto max-w-[1120px] space-y-6 px-4 py-6 md:px-6 md:py-8">
+      <SectionHeader
+        title="Connexion"
+        description="La nouvelle base garde les comptes de test et l'entree admin par PIN, mais dans une presentation plus nette."
+      />
+      <div className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
         <Card className="space-y-4">
-          <Badge className="border-blue-500/20 bg-blue-500/10 text-blue-100">Connexion</Badge>
-          <h1 className="font-display text-4xl text-white">Accédez au cockpit XTrendAI Pro</h1>
-          <p className="text-slate-400">Comptes de test, login email/mot de passe, ou accès Super Admin par PIN.</p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {[
-              ["free", "Free"],
-              ["pro", "Pro"],
-              ["expert", "Expert"],
-              ["institutional", "Institutionnel"],
-              ["admin", "Admin"],
-            ].map(([key, label]) => (
-              <Button key={key} variant="secondary" onClick={async () => (await quickLogin(key as never)) && navigate("/dashboard")}>
-                Quick login {label}
+          <p className="font-display text-4xl tracking-[-0.05em] text-white">Reprendre la main sur le desk</p>
+          <p className="text-sm leading-7 text-slate-400">
+            Connecte-toi pour acceder au dashboard, aux signaux live et a l'espace d'administration.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {quickAccounts.map((account) => (
+              <Button
+                key={account}
+                variant="secondary"
+                onClick={async () => {
+                  const ok = await quickLogin(account);
+                  if (ok) navigate(account === "admin" ? "/admin" : "/dashboard");
+                }}
+              >
+                Quick {account}
               </Button>
             ))}
           </div>
+          <div className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+            <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Admin PIN</p>
+            <div className="mt-3 flex gap-3">
+              <Input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="202406" />
+              <Button
+                onClick={async () => {
+                  const ok = await adminPinLogin(pin);
+                  if (ok) navigate("/admin");
+                }}
+              >
+                Entrer
+              </Button>
+            </div>
+          </div>
         </Card>
 
-        <Card className="space-y-5">
-          <div className="space-y-2">
-            <h2 className="font-display text-2xl text-white">Email & mot de passe</h2>
-            <p className="text-sm text-slate-400">Compte admin: `admin@xtrendai.com` / `Admin2024!` / PIN `202406`.</p>
-          </div>
-          <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
-          <Input type="password" placeholder="Mot de passe" value={password} onChange={(event) => setPassword(event.target.value)} />
-          <Button
-            onClick={async () => {
-              if (await login(email, password)) navigate("/dashboard");
-            }}
-          >
-            Se connecter
-          </Button>
-
-          <div className="space-y-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-            <p className="font-medium text-white">Accès PIN Super Admin</p>
-            <Input placeholder="PIN 202406" value={pin} onChange={(event) => setPin(event.target.value)} />
-            <Button variant="secondary" onClick={async () => (await adminPinLogin(pin)) && navigate("/admin")}>
-              Valider le PIN
+        <Card className="space-y-4">
+          <p className="font-display text-3xl tracking-[-0.05em] text-white">Connexion classique</p>
+          <div className="grid gap-4">
+            <Input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email" />
+            <Input value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Mot de passe" type="password" />
+            <Button
+              onClick={async () => {
+                const ok = await login(email, password);
+                if (ok) navigate("/dashboard");
+              }}
+            >
+              Se connecter
             </Button>
+            {loginError ? <Badge className="border-rose-400/20 bg-rose-500/10 text-rose-200">{loginError}</Badge> : null}
           </div>
-
-          {loginError ? <p className="text-sm text-red-300">{loginError}</p> : null}
           <p className="text-sm text-slate-400">
-            Pas encore de compte ? <Link className="text-blue-300" to="/register">Créer un profil</Link>
+            Pas encore de compte ? <Link to="/register" className="text-[#6fe7dd]">Creer un acces</Link>
           </p>
         </Card>
       </div>

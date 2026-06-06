@@ -1,31 +1,23 @@
-import { AppPageFrame } from "@/pages/page-helpers";
-import { useAuth } from "@/hooks/useAuth";
-import { PACK_LABELS } from "@/lib/constants";
-import { getPlatformSettings } from "@/services/platformSettingsService";
-import { formatCurrency } from "@/lib/format";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
+import { AppPageFrame, PricingSummary, PublicCtaStrip } from "@/pages/page-helpers";
 import { Card } from "@/components/ui/primitives";
 
 export default function SubscriptionPage() {
-  const { user } = useAuth();
-  const settings = getPlatformSettings();
+  const settings = usePlatformSettings();
 
   return (
     <AppPageFrame
-      title="Abonnement"
-      description="Résumé du pack courant, statut et tarifs synchronisés depuis l’admin panel."
+      title="Subscription"
+      description="Cette page clarifie les differences de packs et reprend la meme grille tarifaire que la vitrine publique."
     >
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="text-slate-300">Pack actif: {user ? PACK_LABELS[user.pack] : "Aucun"}</Card>
-        <Card className="text-slate-300">Statut: {user?.packStatus ?? "inactif"}</Card>
-        <Card className="text-slate-300">Expiration: {user?.packExpiresAt ?? "n/a"}</Card>
-      </div>
-      <div className="grid gap-4 xl:grid-cols-4">
-        {(["free", "pro", "expert", "institutional"] as const).map((pack) => (
-          <Card key={pack} className="text-slate-300">
-            {PACK_LABELS[pack]}: {formatCurrency(settings.packPrices[pack])} / mois
-          </Card>
-        ))}
-      </div>
+      <Card className="space-y-3">
+        <p className="font-display text-3xl tracking-[-0.05em] text-white">Packs harmonises</p>
+        <p className="text-sm leading-7 text-slate-400">
+          Free sert de point d'entree, Pro ouvre les flux live premium, Expert ajoute l'IA avancée et Institutional etend la couche business et admin.
+        </p>
+      </Card>
+      <PricingSummary prices={settings.packPrices} yearlyPrices={settings.packPricesYearly} />
+      <PublicCtaStrip />
     </AppPageFrame>
   );
 }

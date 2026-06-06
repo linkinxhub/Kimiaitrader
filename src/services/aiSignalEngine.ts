@@ -26,7 +26,7 @@ function chooseDirection(indicators: SignalIndicators): SignalDirection {
 function getRiskLevel(confidence: number): AISignal["riskLevel"] {
   if (confidence >= 75) return "Faible";
   if (confidence >= 60) return "Moyen";
-  return "Elevé";
+  return "Eleve";
 }
 
 export function generateSignalFromQuote(quote: AssetQuote): AISignal {

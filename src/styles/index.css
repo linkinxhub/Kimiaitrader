@@ -4,6 +4,11 @@
 
 :root {
   color-scheme: dark;
+  --bg: #07111d;
+  --surface: rgba(9, 18, 31, 0.82);
+  --text: #edf2f7;
+  --muted: #9aa7b8;
+  --border: rgba(255, 255, 255, 0.1);
 }
 
 html,
@@ -12,15 +17,35 @@ body,
   min-height: 100%;
 }
 
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f4f7fb;
+  --surface: rgba(255, 255, 255, 0.9);
+  --text: #0f172a;
+  --muted: #475569;
+  --border: rgba(15, 23, 42, 0.08);
+}
+
 body {
   margin: 0;
   min-width: 320px;
   font-family: "Manrope", ui-sans-serif, system-ui;
   background:
-    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 22%),
-    radial-gradient(circle at top left, rgba(79, 70, 229, 0.12), transparent 20%),
-    #020617;
-  color: #f8fafc;
+    radial-gradient(circle at 0% 0%, rgba(111, 231, 221, 0.12), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.08), transparent 26%),
+    radial-gradient(circle at 80% 35%, rgba(56, 189, 248, 0.12), transparent 20%),
+    linear-gradient(180deg, #09111d 0%, #050915 100%);
+  color: var(--text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.12), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.1), transparent 24%),
+    linear-gradient(180deg, #f8fbff 0%, #eff5fb 100%);
 }
 
 * {
@@ -39,6 +64,25 @@ select {
   font: inherit;
 }
 
+img {
+  display: block;
+  max-width: 100%;
+}
+
 ::selection {
-  background: rgba(59, 130, 246, 0.35);
+  background: rgba(111, 231, 221, 0.28);
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
 }

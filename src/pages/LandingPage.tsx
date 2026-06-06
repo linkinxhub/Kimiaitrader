@@ -1,179 +1,210 @@
-import { motion } from "framer-motion";
-import { CheckCircle2, Layers3, ShieldCheck, Sparkles, TrendingUp, Webhook } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getVerifiedFeedback, getAverageRating } from "@/services/feedbackService";
-import { getPlatformSettings } from "@/services/platformSettingsService";
-import { getSiteUpdates } from "@/services/siteUpdatesService";
-import { getSourcesStatus } from "@/services/marketApi";
-import { formatCurrency, formatPercent } from "@/lib/format";
-import { PublicCtaStrip } from "@/pages/page-helpers";
-import { Badge, Button, Card } from "@/components/ui/primitives";
+import { ArrowRight, BarChart3, BellRing, Bot, CandlestickChart, ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import { getVerifiedFeedback } from "@/services/feedbackService";
+import { usePlatformSettings } from "@/hooks/usePlatformSettings";
+import { useSiteUpdates } from "@/hooks/useSiteUpdates";
+import {
+  MarketingMetricStrip,
+  PricingSummary,
+  PublicCtaStrip,
+  QuoteGrid,
+  SourceStatusGrid,
+  WorkspaceHero,
+  useWorkspaceData,
+} from "@/pages/page-helpers";
+import { Badge, Button, Card, SectionHeader } from "@/components/ui/primitives";
+
+const featureList = [
+  {
+    icon: CandlestickChart,
+    title: "Flux live multi-marche",
+    description: "Crypto via Binance et CoinGecko, forex via Frankfurter, et or via Currency API avec fallback automatique.",
+  },
+  {
+    icon: Sparkles,
+    title: "Signaux IA lisibles",
+    description: "Chaque signal expose entry, stop, take profits, niveau de risque, et une explication exploitable.",
+  },
+  {
+    icon: BellRing,
+    title: "Discipline d'execution",
+    description: "Alertes, journal et suivi de positions travaillent ensemble pour eviter les decisions improvisees.",
+  },
+  {
+    icon: Bot,
+    title: "Stack evolutive",
+    description: "Le socle reste statique et deployable partout, mais la couche produit garde un comportement tres operationnel.",
+  },
+];
 
 export default function LandingPage() {
-  const settings = getPlatformSettings();
-  const feedback = getVerifiedFeedback();
-  const updates = getSiteUpdates().slice(0, 3);
-  const sources = getSourcesStatus(false);
-  const averageRating = getAverageRating();
+  const settings = usePlatformSettings();
+  const updates = useSiteUpdates();
+  const feedback = getVerifiedFeedback().slice(0, 4);
+  const { quotes, signals, sources, loading } = useWorkspaceData();
 
   return (
-    <div className="min-h-screen bg-hero-grid text-white">
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="font-display text-2xl font-semibold">{settings.platformName}</p>
-            <p className="text-sm text-slate-400">{settings.slogan}</p>
+    <div className="mx-auto max-w-[1380px] space-y-8 px-4 py-6 md:px-6 md:py-8">
+      <header className="rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(7,17,29,0.88),rgba(7,17,29,0.65))] px-6 py-5 shadow-[0_24px_80px_rgba(2,6,23,0.34)] backdrop-blur-xl">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-2">
+            <p className="font-display text-[30px] tracking-[-0.05em] text-white">{settings.platformName}</p>
+            <p className="max-w-2xl text-sm leading-7 text-slate-400">{settings.slogan}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/updates" className="text-sm text-slate-300">Updates</Link>
-            <Link to="/login"><Button variant="secondary">Connexion</Button></Link>
-            <Link to="/register"><Button>Essai immédiat</Button></Link>
-          </div>
-        </header>
+          <nav className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+            <Link to="/updates" className="transition hover:text-white">
+              Updates
+            </Link>
+            <Link to="/login" className="transition hover:text-white">
+              Login
+            </Link>
+            <Link to="/register">
+              <Button>
+                {settings.primaryCtaLabel}
+                <ArrowRight className="ml-2 size-4" />
+              </Button>
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-        <section className="grid gap-10 py-20 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-8">
-            <Badge className="border-blue-500/20 bg-blue-500/10 text-blue-100">Realtime AI Signals</Badge>
-            <div className="space-y-4">
-              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-tight md:text-6xl">
-                Trading assisté par IA, packs live, et cockpit admin dans une seule plateforme statique.
-              </h1>
-              <p className="max-w-2xl text-lg text-slate-300">
-                XTrendAI Pro connecte signaux IA, radar multi-actifs, XAU/USD premium, alertes, journal de trading et administration business sans backend.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/register"><Button>Créer mon compte</Button></Link>
-              <Link to="/login"><Button variant="secondary">Tester les comptes démo</Button></Link>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                { label: "Signaux mensuels", value: "312+" },
-                { label: "Note vérifiée", value: `${averageRating.toFixed(1)}/5` },
-                { label: "Pack Pro", value: formatCurrency(settings.packPrices.pro) },
-              ].map((stat) => (
-                <motion.div key={stat.label} animate={{ y: [0, -6, 0] }} transition={{ duration: 6, repeat: Infinity }} className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5">
-                  <p className="text-sm text-slate-400">{stat.label}</p>
-                  <p className="mt-3 font-display text-3xl text-white">{stat.value}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      <WorkspaceHero
+        title={settings.heroTitle}
+        description={settings.heroDescription}
+        quotes={quotes}
+        signals={signals}
+        loading={loading}
+      />
 
-          <Card className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-display text-2xl text-white">Vue cockpit</p>
-                <p className="text-sm text-slate-400">Signals, risk, pricing, packs</p>
+      <MarketingMetricStrip />
+
+      <section className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="space-y-5">
+          <SectionHeader
+            title="Une vitrine qui montre le produit, pas une promesse vide"
+            description="Le site public expose vraiment les flux suivis, la logique de packs, les mises a jour, et une lecture claire de l'outil."
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            {featureList.map((feature) => (
+              <div key={feature.title} className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4">
+                <feature.icon className="size-5 text-[#6fe7dd]" />
+                <h3 className="mt-4 font-display text-2xl tracking-[-0.04em] text-white">{feature.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-400">{feature.description}</p>
               </div>
-              <Badge className="border-emerald-400/20 text-emerald-200">LIVE</Badge>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="space-y-5">
+          <SectionHeader
+            title="Packs pilotables"
+            description="Les prix et messages publics sont harmonises avec le panneau admin pour eviter les incoherences."
+          />
+          <div className="space-y-4">
+            <div className="rounded-[24px] border border-[#6fe7dd]/18 bg-[linear-gradient(135deg,rgba(111,231,221,0.12),rgba(59,130,246,0.06))] p-4">
+              <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Pack actif cote vitrine</p>
+              <p className="mt-2 font-display text-3xl tracking-[-0.05em] text-white">Free, Pro, Expert, Institutional</p>
+              <p className="mt-2 text-sm leading-7 text-slate-300">Meme source de verite entre la page publique, la facturation, et l'admin.</p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                { title: "BTC/USD", move: "+1.92%", tone: "text-emerald-200" },
-                { title: "XAU/USD", move: "+0.48%", tone: "text-emerald-200" },
-                { title: "EUR/USD", move: "-0.15%", tone: "text-red-200" },
-                { title: "Signal IA", move: "ACHAT 78%", tone: "text-blue-200" },
-              ].map((item) => (
-                <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <p className="text-sm text-slate-400">{item.title}</p>
-                  <p className={`mt-2 font-display text-2xl ${item.tone}`}>{item.move}</p>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-[22px] border border-white/8 bg-slate-950/35 p-4">
+                <p className="text-sm text-slate-500">Donnees live</p>
+                <p className="mt-2 font-display text-3xl text-white">Oui</p>
+              </div>
+              <div className="rounded-[22px] border border-white/8 bg-slate-950/35 p-4">
+                <p className="text-sm text-slate-500">Deploiement</p>
+                <p className="mt-2 font-display text-3xl text-white">Statique</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      <section className="space-y-5">
+        <SectionHeader
+          title="Sources de donnees visibles"
+          description="La nouvelle experience garde les libelles de source et les fallbacks explicites, pour que l'utilisateur sache toujours d'ou vient l'information."
+        />
+        <SourceStatusGrid sources={sources} />
+      </section>
+
+      <section className="space-y-5">
+        <SectionHeader
+          title="Lecture rapide du marche"
+          description="Quelques actifs live suffisent a faire comprendre la profondeur produit, sans forcer l'utilisateur a se connecter."
+        />
+        <QuoteGrid quotes={quotes.slice(0, 6)} />
+      </section>
+
+      <section className="space-y-5">
+        <SectionHeader
+          title="Abonnements"
+          description="Chaque pack garde sa logique, mais la presentation est plus claire et les prix sont synchronises depuis l'admin."
+        />
+        <PricingSummary prices={settings.packPrices} yearlyPrices={settings.packPricesYearly} />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card className="space-y-5">
+          <SectionHeader
+            title="Mises a jour publiees"
+            description="Le flux public est directement alimente par le panneau admin."
+          />
+          <div className="space-y-3">
+            {updates.slice(0, 4).map((update) => (
+              <div key={update.id} className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-display text-2xl tracking-[-0.04em] text-white">{update.title}</h3>
+                  <Badge>{update.category}</Badge>
                 </div>
-              ))}
-            </div>
-            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm text-slate-100">
-              Super Admin: toujours en LIVE, même hors pack utilisateur classique.
-            </div>
-          </Card>
-        </section>
-
-        <section className="space-y-5 py-10">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="font-display text-3xl">Sources de données</h2>
-              <p className="text-slate-400">Fallbacks actifs pour ne jamais laisser la plateforme vide.</p>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {sources.map((source) => (
-              <Card key={source.name}>
-                <p className="font-display text-lg text-white">{source.name}</p>
-                <p className="mt-2 text-sm text-slate-400">Latence {source.latency}</p>
-                <Badge className="mt-4 border-slate-700">{source.status}</Badge>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section className="grid gap-4 py-10 md:grid-cols-2 xl:grid-cols-5">
-          {[
-            { icon: Webhook, title: "WebSockets", text: "Flux Binance temps réel sous 200ms." },
-            { icon: Sparkles, title: "IA LLM", text: "Assistant Expert avec contexte marché injecté." },
-            { icon: TrendingUp, title: "Signaux", text: "Entrée, SL, TP, RR et explications naturelles." },
-            { icon: Layers3, title: "Scanner", text: "Breakout, trend, multi-actifs, opportunités." },
-            { icon: ShieldCheck, title: "Sécurité", text: "PIN admin, lockout, 2FA, OTP, sessions." },
-          ].map((feature) => (
-            <Card key={feature.title} className="space-y-3">
-              <feature.icon className="size-5 text-blue-300" />
-              <p className="font-display text-lg text-white">{feature.title}</p>
-              <p className="text-sm text-slate-400">{feature.text}</p>
-            </Card>
-          ))}
-        </section>
-
-        <section className="grid gap-6 py-10 lg:grid-cols-4">
-          {[
-            { name: "Free", price: settings.packPrices.free, accent: "text-slate-200", features: ["Dashboard", "Signaux IA", "Journal", "Démo fixe"] },
-            { name: "Pro", price: settings.packPrices.pro, accent: "text-amber-200", features: ["XAU/USD", "Radar", "Simulator", "LIVE APIs"] },
-            { name: "Expert", price: settings.packPrices.expert, accent: "text-violet-200", features: ["Smart Money", "Assistant IA", "Strategy Lab", "Export MT4/5"] },
-            { name: "Institutionnel", price: settings.packPrices.institutional, accent: "text-rose-200", features: ["API Center", "Multi-comptes", "White Label", "Support 24/7"] },
-          ].map((pack) => (
-            <Card key={pack.name} className="space-y-4">
-              <p className={`font-display text-2xl ${pack.accent}`}>{pack.name}</p>
-              <p className="font-display text-4xl text-white">{formatCurrency(pack.price)}</p>
-              <div className="space-y-2 text-sm text-slate-300">
-                {pack.features.map((feature) => (
-                  <p key={feature} className="flex items-center gap-2"><CheckCircle2 className="size-4 text-emerald-300" />{feature}</p>
-                ))}
+                <p className="mt-2 text-sm leading-7 text-slate-400">{update.description}</p>
               </div>
-            </Card>
-          ))}
-        </section>
-
-        <section className="space-y-6 py-10">
-          <div>
-            <h2 className="font-display text-3xl">Témoignages vérifiés</h2>
-            <p className="text-slate-400">Résultats réels déclarés par les utilisateurs par pack.</p>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-4">
-            {feedback.map((item) => (
-              <Card key={item.id} className="space-y-3">
-                <p className="font-display text-lg text-white">{item.userName}</p>
-                <p className="text-sm text-slate-300">{item.comment}</p>
-                <p className="text-sm text-slate-400">WR {formatPercent(item.results.winRate)} • PnL {formatCurrency(item.results.pnl)}</p>
-              </Card>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="space-y-4 py-10">
-          <div>
-            <h2 className="font-display text-3xl">FAQ & updates</h2>
-            <p className="text-slate-400">Les dernières évolutions du produit pilotées par l’admin panel.</p>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-3">
-            {updates.map((item) => (
-              <Card key={item.id} className="space-y-3">
-                <Badge>{item.category}</Badge>
-                <p className="font-display text-xl text-white">{item.title}</p>
-                <p className="text-sm text-slate-400">{item.description}</p>
-              </Card>
+        <Card className="space-y-5">
+          <SectionHeader
+            title="Temoignages verifies"
+            description="Le discours commercial reste ancre dans des resultats et des retours d'usage."
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            {feedback.map((entry) => (
+              <div key={entry.id} className="rounded-[24px] border border-white/8 bg-slate-950/35 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="font-display text-2xl tracking-[-0.04em] text-white">{entry.userName}</p>
+                  <Badge>{entry.pack}</Badge>
+                </div>
+                <p className="mt-3 text-sm leading-7 text-slate-300">{entry.comment}</p>
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-slate-400">
+                  <p>WR {entry.results.winRate}%</p>
+                  <p>PnL {entry.results.pnl} EUR</p>
+                  <p>Rating {entry.rating}/5</p>
+                  <p>Periode {entry.results.period}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </section>
+        </Card>
+      </section>
 
-        <PublicCtaStrip />
-      </div>
+      <section className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <SectionHeader
+            title="Concu pour rester fluide"
+            description="Le shell, les composants et les ecrans cles ont ete reconstruits pour une lecture plus immediate et un rendu plus haut de gamme."
+          />
+        </Card>
+        <Card className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm text-slate-500">Workflow valide</p>
+            <p className="mt-2 font-display text-3xl tracking-[-0.05em] text-white">Vitrine + Produit + Admin</p>
+          </div>
+          <Wallet className="size-6 text-[#6fe7dd]" />
+        </Card>
+      </section>
+
+      <PublicCtaStrip />
     </div>
   );
 }

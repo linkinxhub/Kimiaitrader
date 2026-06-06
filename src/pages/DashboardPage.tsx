@@ -1,22 +1,39 @@
-import { AppPageFrame, DashboardStats, DataRefreshButton, QuoteGrid, SignalGrid, SignalInsightList, useWorkspaceData } from "@/pages/page-helpers";
-import { Card } from "@/components/ui/primitives";
+import {
+  AppPageFrame,
+  DashboardStats,
+  DataRefreshButton,
+  MarketSnapshotRail,
+  QuoteGrid,
+  SignalGrid,
+  SignalInsightList,
+  SourceStatusGrid,
+  WorkspaceHero,
+  useWorkspaceData,
+} from "@/pages/page-helpers";
 
 export default function DashboardPage() {
-  const { quotes, signals, loading, refresh, isDemo } = useWorkspaceData();
+  const { quotes, signals, loading, refresh, isDemo, sources } = useWorkspaceData();
 
   return (
     <AppPageFrame
       title="Dashboard"
-      description="Vue globale des signaux IA, marchés suivis, risque et opportunités principales."
+      description="Une vue plus fluide du desk: actifs suivis, signaux, snapshots de marche et visibilite sur les sources live."
       action={<DataRefreshButton onClick={refresh} loading={loading} />}
     >
+      <WorkspaceHero
+        eyebrow={isDemo ? "Mode Demo" : "Live market room"}
+        title="Un dashboard qui sert la decision, pas juste la decoration."
+        description="Le nouvel ecran d'accueil fait remonter les signaux les plus exploitables, les flux de marche les plus utiles et l'etat des sources en un seul regard."
+        quotes={quotes}
+        signals={signals}
+        loading={loading}
+      />
       <DashboardStats quotes={quotes} signals={signals} isDemo={isDemo} />
+      <MarketSnapshotRail quotes={quotes} />
       <SignalGrid signals={signals} />
-      <QuoteGrid quotes={quotes} />
       <SignalInsightList signals={signals.slice(0, 2)} />
-      <Card className="text-sm text-slate-300">
-        Gestion du risque recommandée: limiter l'exposition à 1-2% par idée, confirmer les entrées par structure, et éviter l'empilement de corrélations.
-      </Card>
+      <QuoteGrid quotes={quotes} />
+      <SourceStatusGrid sources={sources} />
     </AppPageFrame>
   );
 }

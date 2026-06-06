@@ -4,6 +4,9 @@ dist/
 vite.log
 qa-screens/
 *.log
+tsconfig.tsbuildinfo
 
 .DS_Store
 Thumbs.db
+
+.vercel

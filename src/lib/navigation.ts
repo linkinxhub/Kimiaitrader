@@ -9,7 +9,7 @@ import {
   CandlestickChart,
   CreditCard,
   Gauge,
-  Globe,
+  Globe2,
   History,
   LayoutDashboard,
   Lock,
@@ -34,30 +34,62 @@ export interface NavItem {
   adminOnly?: boolean;
 }
 
-export const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Signaux IA", path: "/signals", icon: Sparkles },
-  { label: "XAU/USD Premium", path: "/xauusd", icon: CandlestickChart, minPack: "pro", badge: "PRO" },
-  { label: "Radar Opportunités", path: "/radar", icon: Radar, minPack: "pro", badge: "PRO" },
-  { label: "Smart Money", path: "/smart-money", icon: Brain, minPack: "expert", badge: "EXPERT" },
-  { label: "Assistant IA", path: "/ai-assistant", icon: Bot, minPack: "expert", badge: "EXPERT" },
-  { label: "Intelligence Center", path: "/intelligence", icon: Globe, badge: "NEW" },
-  { label: "Strategy Lab", path: "/strategy-lab", icon: Waypoints, minPack: "expert", badge: "EXPERT" },
-  { label: "Simulateur", path: "/simulator", icon: Activity, minPack: "pro", badge: "PRO" },
-  { label: "Analyse Technique", path: "/technical", icon: Gauge },
-  { label: "Calendrier", path: "/calendar", icon: BarChart3 },
-  { label: "Historique", path: "/history", icon: History },
-  { label: "Risk Manager", path: "/risk", icon: ShieldCheck },
-  { label: "Alertes", path: "/alerts", icon: Bell },
-  { label: "Portfolio", path: "/portfolio", icon: Wallet },
-  { label: "Multi-Asset", path: "/multi-asset", icon: BriefcaseBusiness, minPack: "pro", badge: "PRO" },
-  { label: "Scanner Marché", path: "/scanner", icon: ScanSearch, minPack: "pro", badge: "PRO" },
-  { label: "Export MT4/5", path: "/mt-export", icon: Target, minPack: "expert", badge: "EXPERT" },
-  { label: "Billing", path: "/billing", icon: CreditCard },
-  { label: "Abonnement", path: "/subscription", icon: CreditCard },
-  { label: "OANDA", path: "/oanda", icon: CandlestickChart, badge: "BROKER" },
-  { label: "Paramètres", path: "/settings", icon: Settings },
-  { label: "Admin Panel", path: "/admin", icon: Lock, adminOnly: true, badge: "ADMIN" },
-  { label: "Admin Security", path: "/admin/security", icon: AlertTriangle, adminOnly: true, badge: "ADMIN" },
-  { label: "API Center", path: "/api-center", icon: Globe, adminOnly: true, badge: "ADMIN" },
+export interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+export const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Market Desk",
+    items: [
+      { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+      { label: "Signals", path: "/signals", icon: Sparkles },
+      { label: "Gold Room", path: "/xauusd", icon: CandlestickChart, minPack: "pro", badge: "PRO" },
+      { label: "Radar", path: "/radar", icon: Radar, minPack: "pro", badge: "PRO" },
+      { label: "Intelligence", path: "/intelligence", icon: Globe2, badge: "LIVE" },
+      { label: "Technical", path: "/technical", icon: Gauge },
+      { label: "Calendar", path: "/calendar", icon: BarChart3 },
+      { label: "History", path: "/history", icon: History },
+    ],
+  },
+  {
+    label: "Execution",
+    items: [
+      { label: "Risk", path: "/risk", icon: ShieldCheck },
+      { label: "Alerts", path: "/alerts", icon: Bell },
+      { label: "Portfolio", path: "/portfolio", icon: Wallet },
+      { label: "Multi-Asset", path: "/multi-asset", icon: BriefcaseBusiness, minPack: "pro", badge: "PRO" },
+      { label: "Scanner", path: "/scanner", icon: ScanSearch, minPack: "pro", badge: "PRO" },
+      { label: "Simulator", path: "/simulator", icon: Activity, minPack: "pro", badge: "PRO" },
+      { label: "MT Export", path: "/mt-export", icon: Target, minPack: "expert", badge: "EXPERT" },
+      { label: "OANDA", path: "/oanda", icon: CandlestickChart, badge: "BROKER" },
+    ],
+  },
+  {
+    label: "Research",
+    items: [
+      { label: "Smart Money", path: "/smart-money", icon: Brain, minPack: "expert", badge: "EXPERT" },
+      { label: "AI Assistant", path: "/ai-assistant", icon: Bot, minPack: "expert", badge: "EXPERT" },
+      { label: "Strategy Lab", path: "/strategy-lab", icon: Waypoints, minPack: "expert", badge: "EXPERT" },
+    ],
+  },
+  {
+    label: "Account",
+    items: [
+      { label: "Billing", path: "/billing", icon: CreditCard },
+      { label: "Subscription", path: "/subscription", icon: CreditCard },
+      { label: "Settings", path: "/settings", icon: Settings },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { label: "Admin Panel", path: "/admin", icon: Lock, adminOnly: true, badge: "ADMIN" },
+      { label: "Admin Security", path: "/admin/security", icon: AlertTriangle, adminOnly: true, badge: "ADMIN" },
+      { label: "API Center", path: "/api-center", icon: Globe2, adminOnly: true, badge: "ADMIN" },
+    ],
+  },
 ];
+
+export const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items);

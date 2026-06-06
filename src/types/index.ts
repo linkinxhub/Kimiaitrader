@@ -1,7 +1,7 @@
 export type Pack = "free" | "pro" | "expert" | "institutional";
 export type Role = "user" | "admin";
 export type SignalDirection = "ACHAT" | "VENTE" | "ATTENTE";
-export type RiskLevel = "Faible" | "Moyen" | "Elevé";
+export type RiskLevel = "Faible" | "Moyen" | "Eleve";
 export type AlertCondition = "ABOVE" | "BELOW" | "EQUALS";
 export type MarketKind = "crypto" | "forex" | "metal" | "index";
 export type LlmProvider = "openai" | "anthropic" | "deepseek" | "gemini";
@@ -112,6 +112,12 @@ export interface PackPrices {
   institutional: number;
 }
 
+export interface MarketingMetric {
+  label: string;
+  value: string;
+  note: string;
+}
+
 export interface PlatformSettings {
   platformName: string;
   slogan: string;
@@ -128,6 +134,16 @@ export interface PlatformSettings {
   detectSuspiciousIP: boolean;
   packPrices: PackPrices;
   packPricesYearly: PackPrices;
+  heroBadge: string;
+  heroTitle: string;
+  heroDescription: string;
+  primaryCtaLabel: string;
+  secondaryCtaLabel: string;
+  finalCtaTitle: string;
+  finalCtaDescription: string;
+  controlPanelLabel: string;
+  liveStatusLabel: string;
+  heroMetrics: MarketingMetric[];
 }
 
 export interface SignalRecord {
@@ -138,12 +154,6 @@ export interface SignalRecord {
   direction: SignalDirection;
   confidence: number;
   createdAt: string;
-}
-
-export interface PackProjection {
-  signals: number;
-  winRate: number;
-  pnl: number;
 }
 
 export interface PackAnalytics {
@@ -174,7 +184,7 @@ export interface SiteUpdate {
   id: string;
   title: string;
   description: string;
-  category: "Produit" | "Trading" | "Sécurité" | "Business";
+  category: "Produit" | "Trading" | "Securite" | "Business";
   publishedAt: string;
 }
 
