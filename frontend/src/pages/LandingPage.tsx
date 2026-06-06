@@ -1,179 +1,463 @@
 import { motion } from "framer-motion";
-import { CheckCircle2, Layers3, ShieldCheck, Sparkles, TrendingUp, Webhook } from "lucide-react";
+import {
+  Activity,
+  ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  Crown,
+  ShieldCheck,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { getVerifiedFeedback, getAverageRating } from "@/services/feedbackService";
-import { getPlatformSettings } from "@/services/platformSettingsService";
-import { getSiteUpdates } from "@/services/siteUpdatesService";
-import { getSourcesStatus } from "@/services/marketApi";
-import { formatCurrency, formatPercent } from "@/lib/format";
-import { PublicCtaStrip } from "@/pages/page-helpers";
-import { Badge, Button, Card } from "@/components/ui/primitives";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { BrandMark } from "@/components/BrandMark";
+import { SectionHeading } from "@/components/SectionHeading";
+import { featureCards, landingHighlights, landingQuickBadges, plans, trustedStats } from "@/data/platform";
+import { useRemoteJson } from "@/hooks/useRemoteJson";
+import type { MarketSnapshot } from "@/types/audit";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
+
+function formatPrice(value: number | null, code: string) {
+  if (value == null) return "Unavailable";
+  const digits = code.includes("/") ? 4 : 2;
+  return value.toLocaleString("en-US", { maximumFractionDigits: digits });
+}
 
 export default function LandingPage() {
-  const settings = getPlatformSettings();
-  const feedback = getVerifiedFeedback();
-  const updates = getSiteUpdates().slice(0, 3);
-  const sources = getSourcesStatus(false);
-  const averageRating = getAverageRating();
+  const snapshot = useRemoteJson<MarketSnapshot>("/api/market/snapshot", 60000);
+  const heroAssets = (snapshot.data?.assets ?? []).slice(0, 6);
+  const gold = snapshot.data?.assets.find((asset) => asset.code === "XAU/USD") ?? null;
 
   return (
-    <div className="min-h-screen bg-hero-grid text-white">
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="font-display text-2xl font-semibold">{settings.platformName}</p>
-            <p className="text-sm text-slate-400">{settings.slogan}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/updates" className="text-sm text-slate-300">Updates</Link>
-            <Link to="/login"><Button variant="secondary">Connexion</Button></Link>
-            <Link to="/register"><Button>Essai immédiat</Button></Link>
+    <div className="landing-page">
+      <section className="landing-hero">
+        <header className="landing-nav">
+          <BrandMark />
+          <nav className="landing-nav__links">
+            <a href="#platform">Platform</a>
+            <a href="#markets">Markets</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#resources">Resources</a>
+            <a href="#company">Company</a>
+          </nav>
+          <div className="landing-nav__actions">
+            <button className="ghost-button">Log in</button>
+            <Link className="primary-button" to="/dashboard">
+              Start Free
+            </Link>
           </div>
         </header>
 
-        <section className="grid gap-10 py-20 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-8">
-            <Badge className="border-blue-500/20 bg-blue-500/10 text-blue-100">Realtime AI Signals</Badge>
-            <div className="space-y-4">
-              <h1 className="max-w-3xl font-display text-5xl font-semibold leading-tight md:text-6xl">
-                Trading assisté par IA, packs live, et cockpit admin dans une seule plateforme statique.
-              </h1>
-              <p className="max-w-2xl text-lg text-slate-300">
-                XTrendAI Pro connecte signaux IA, radar multi-actifs, XAU/USD premium, alertes, journal de trading et administration business sans backend.
-              </p>
+        <div className="landing-hero__content">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} transition={{ duration: 0.6 }} className="landing-hero__copy">
+            <h1>Professional trading SaaS starts with real data, not demo illusions.</h1>
+            <p>
+              XTrendAI Pro now exposes provider health, live market provenance, pack compliance, and payment readiness
+              so every premium promise can be audited before it is sold.
+            </p>
+            <div className="landing-hero__cta">
+              <Link className="primary-button" to="/dashboard">
+                Open Audit Dashboard
+              </Link>
+              <Link className="secondary-button" to="/admin">
+                Open API Center
+              </Link>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/register"><Button>Créer mon compte</Button></Link>
-              <Link to="/login"><Button variant="secondary">Tester les comptes démo</Button></Link>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                { label: "Signaux mensuels", value: "312+" },
-                { label: "Note vérifiée", value: `${averageRating.toFixed(1)}/5` },
-                { label: "Pack Pro", value: formatCurrency(settings.packPrices.pro) },
-              ].map((stat) => (
-                <motion.div key={stat.label} animate={{ y: [0, -6, 0] }} transition={{ duration: 6, repeat: Infinity }} className="rounded-3xl border border-slate-800 bg-slate-900/60 p-5">
-                  <p className="text-sm text-slate-400">{stat.label}</p>
-                  <p className="mt-3 font-display text-3xl text-white">{stat.value}</p>
-                </motion.div>
+            <div className="landing-badge-row">
+              {landingQuickBadges.map(({ label, icon: Icon }) => (
+                <span key={label} className="landing-badge">
+                  <Icon size={15} />
+                  {label}
+                </span>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <Card className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-display text-2xl text-white">Vue cockpit</p>
-                <p className="text-sm text-slate-400">Signals, risk, pricing, packs</p>
+          <motion.div
+            initial={{ opacity: 0, x: 32 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="hero-device"
+          >
+            <div className="hero-device__topbar">
+              <span>Live market provenance</span>
+              <div className="hero-device__dots">
+                <span />
+                <span />
+                <span />
               </div>
-              <Badge className="border-emerald-400/20 text-emerald-200">LIVE</Badge>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {[
-                { title: "BTC/USD", move: "+1.92%", tone: "text-emerald-200" },
-                { title: "XAU/USD", move: "+0.48%", tone: "text-emerald-200" },
-                { title: "EUR/USD", move: "-0.15%", tone: "text-red-200" },
-                { title: "Signal IA", move: "ACHAT 78%", tone: "text-blue-200" },
-              ].map((item) => (
-                <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
-                  <p className="text-sm text-slate-400">{item.title}</p>
-                  <p className={`mt-2 font-display text-2xl ${item.tone}`}>{item.move}</p>
+            <div className="hero-device__body">
+              <div className="hero-device__chart">
+                <div className="chart-caption">
+                  <span>XAU/USD</span>
+                  <strong>{gold?.source ?? "Loading"}</strong>
                 </div>
-              ))}
-            </div>
-            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm text-slate-100">
-              Super Admin: toujours en LIVE, même hors pack utilisateur classique.
-            </div>
-          </Card>
-        </section>
-
-        <section className="space-y-5 py-10">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="font-display text-3xl">Sources de données</h2>
-              <p className="text-slate-400">Fallbacks actifs pour ne jamais laisser la plateforme vide.</p>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {sources.map((source) => (
-              <Card key={source.name}>
-                <p className="font-display text-lg text-white">{source.name}</p>
-                <p className="mt-2 text-sm text-slate-400">Latence {source.latency}</p>
-                <Badge className="mt-4 border-slate-700">{source.status}</Badge>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section className="grid gap-4 py-10 md:grid-cols-2 xl:grid-cols-5">
-          {[
-            { icon: Webhook, title: "WebSockets", text: "Flux Binance temps réel sous 200ms." },
-            { icon: Sparkles, title: "IA LLM", text: "Assistant Expert avec contexte marché injecté." },
-            { icon: TrendingUp, title: "Signaux", text: "Entrée, SL, TP, RR et explications naturelles." },
-            { icon: Layers3, title: "Scanner", text: "Breakout, trend, multi-actifs, opportunités." },
-            { icon: ShieldCheck, title: "Sécurité", text: "PIN admin, lockout, 2FA, OTP, sessions." },
-          ].map((feature) => (
-            <Card key={feature.title} className="space-y-3">
-              <feature.icon className="size-5 text-blue-300" />
-              <p className="font-display text-lg text-white">{feature.title}</p>
-              <p className="text-sm text-slate-400">{feature.text}</p>
-            </Card>
-          ))}
-        </section>
-
-        <section className="grid gap-6 py-10 lg:grid-cols-4">
-          {[
-            { name: "Free", price: settings.packPrices.free, accent: "text-slate-200", features: ["Dashboard", "Signaux IA", "Journal", "Démo fixe"] },
-            { name: "Pro", price: settings.packPrices.pro, accent: "text-amber-200", features: ["XAU/USD", "Radar", "Simulator", "LIVE APIs"] },
-            { name: "Expert", price: settings.packPrices.expert, accent: "text-violet-200", features: ["Smart Money", "Assistant IA", "Strategy Lab", "Export MT4/5"] },
-            { name: "Institutionnel", price: settings.packPrices.institutional, accent: "text-rose-200", features: ["API Center", "Multi-comptes", "White Label", "Support 24/7"] },
-          ].map((pack) => (
-            <Card key={pack.name} className="space-y-4">
-              <p className={`font-display text-2xl ${pack.accent}`}>{pack.name}</p>
-              <p className="font-display text-4xl text-white">{formatCurrency(pack.price)}</p>
-              <div className="space-y-2 text-sm text-slate-300">
-                {pack.features.map((feature) => (
-                  <p key={feature} className="flex items-center gap-2"><CheckCircle2 className="size-4 text-emerald-300" />{feature}</p>
-                ))}
+                <ResponsiveContainer width="100%" height={250}>
+                  <AreaChart data={snapshot.data?.charts["XAU/USD"] ?? []}>
+                    <defs>
+                      <linearGradient id="heroArea" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="#22c55e" stopOpacity={0.32} />
+                        <stop offset="100%" stopColor="#22c55e" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#7f8ea3", fontSize: 11 }} />
+                    <YAxis hide domain={["dataMin", "dataMax"]} />
+                    <Area type="monotone" dataKey="price" stroke="#4ade80" strokeWidth={2.5} fill="url(#heroArea)" />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
-            </Card>
+              <div className="hero-device__signal">
+                <span>Fallback chain</span>
+                <strong>{snapshot.data?.providerChain.length ?? 0} tiers</strong>
+                <div className="signal-ring">
+                  <div className="signal-ring__inner">
+                    <small>{heroAssets.length || 0}/14</small>
+                  </div>
+                </div>
+                <dl>
+                  <div>
+                    <dt>Quality</dt>
+                    <dd>{gold?.quality ?? "pending"}</dd>
+                  </div>
+                  <div>
+                    <dt>Goal</dt>
+                    <dd>No blank markets</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="hero-market-strip">
+          {heroAssets.length ? (
+            heroAssets.map((item) => (
+              <div className="hero-market-card" key={item.code}>
+                <span>{item.code}</span>
+                <strong>{formatPrice(item.price, item.code)}</strong>
+                <em className={(item.changePercent ?? 0) >= 0 ? "is-up" : "is-down"}>
+                  {item.changePercent == null ? item.source : `${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%`}
+                </em>
+              </div>
+            ))
+          ) : (
+            <div className="hero-market-card">
+              <span>Live market board</span>
+              <strong>{snapshot.isLoading ? "Loading..." : "Unavailable locally"}</strong>
+              <em className="is-down">{snapshot.error ?? "Awaiting serverless response"}</em>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="trust-band">
+        <div className="trust-band__headline">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>Built for professionalization, not just presentation.</strong>
+            <p>The platform now exposes what is real, what is missing, and what still blocks SaaS-grade operations.</p>
+          </div>
+        </div>
+        <div className="trust-band__stats">
+          {trustedStats.map((item) => (
+            <div key={item.label}>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </div>
           ))}
-        </section>
+        </div>
+      </section>
 
-        <section className="space-y-6 py-10">
-          <div>
-            <h2 className="font-display text-3xl">Témoignages vérifiés</h2>
-            <p className="text-slate-400">Résultats réels déclarés par les utilisateurs par pack.</p>
-          </div>
-          <div className="grid gap-4 lg:grid-cols-4">
-            {feedback.map((item) => (
-              <Card key={item.id} className="space-y-3">
-                <p className="font-display text-lg text-white">{item.userName}</p>
-                <p className="text-sm text-slate-300">{item.comment}</p>
-                <p className="text-sm text-slate-400">WR {formatPercent(item.results.winRate)} • PnL {formatCurrency(item.results.pnl)}</p>
-              </Card>
+      <section className="feature-grid" id="platform">
+        {featureCards.map(({ title, description, icon: Icon }) => (
+          <article className="feature-card" key={title}>
+            <div className="feature-card__icon">
+              <Icon size={18} />
+            </div>
+            <h3>{title}</h3>
+            <p>{description}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="analysis-section" id="markets">
+        <div className="analysis-section__copy">
+          <SectionHeading
+            title="Audit-first market intelligence"
+            description="Before scaling signals, subscriptions, and automation, the platform must prove source quality, provider redundancy, and update freshness."
+          />
+          <ul className="check-list">
+            {landingHighlights.map((item) => (
+              <li key={item}>
+                <CheckCircle2 size={18} />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="analysis-panel">
+          <div className="analysis-panel__tabs">
+            {(snapshot.data?.providerChain ?? ["Twelve Data", "Finnhub", "Alpha Vantage", "Yahoo Finance"]).map((item, index) => (
+              <button key={item} className={index === 0 ? "is-active" : ""}>
+                {item}
+              </button>
             ))}
           </div>
-        </section>
-
-        <section className="space-y-4 py-10">
-          <div>
-            <h2 className="font-display text-3xl">FAQ & updates</h2>
-            <p className="text-slate-400">Les dernières évolutions du produit pilotées par l’admin panel.</p>
+          <div className="analysis-panel__body">
+            <div className="analysis-panel__chart">
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={snapshot.data?.charts["EUR/USD"] ?? []}>
+                  <defs>
+                    <linearGradient id="analysisArea" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#1d4ed8" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.04} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#73859e", fontSize: 11 }} />
+                  <YAxis hide domain={["dataMin", "dataMax"]} />
+                  <Area type="monotone" dataKey="price" stroke="#60a5fa" strokeWidth={2.4} fill="url(#analysisArea)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="confidence-card">
+              <strong>Current stance</strong>
+              <div className="confidence-card__ring">Live</div>
+              <dl>
+                <div>
+                  <dt>Board status</dt>
+                  <dd>{snapshot.data?.assets.length ? "Operational" : "Pending"}</dd>
+                </div>
+                <div>
+                  <dt>Refresh model</dt>
+                  <dd>Serverless polling</dd>
+                </div>
+              </dl>
+            </div>
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
-            {updates.map((item) => (
-              <Card key={item.id} className="space-y-3">
-                <Badge>{item.category}</Badge>
-                <p className="font-display text-xl text-white">{item.title}</p>
-                <p className="text-sm text-slate-400">{item.description}</p>
-              </Card>
-            ))}
-          </div>
-        </section>
+        </div>
+      </section>
 
-        <PublicCtaStrip />
-      </div>
+      <section className="gold-section">
+        <div className="gold-section__visual">
+          <div className="gold-section__card">
+            <span className="tag-pill">XAU/USD</span>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={snapshot.data?.charts["XAU/USD"] ?? []}>
+                <defs>
+                  <linearGradient id="goldArea" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.03} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fill: "#73859e", fontSize: 11 }} />
+                <YAxis hide domain={["dataMin", "dataMax"]} />
+                <Area type="monotone" dataKey="price" stroke="#fbbf24" strokeWidth={2.4} fill="url(#goldArea)" />
+              </AreaChart>
+            </ResponsiveContainer>
+            <ul className="mini-list">
+              <li>Source: {gold?.source ?? "pending"}</li>
+              <li>Quality: {gold?.quality ?? "pending"}</li>
+              <li>Updated: {gold?.asOf ?? "pending"}</li>
+              <li>Fallback aware</li>
+            </ul>
+          </div>
+        </div>
+        <div className="gold-section__copy">
+          <SectionHeading
+            title="Institutional Gold Module"
+            description="The gold surface now highlights real provenance first. Premium strategy logic can only come after secure backend execution and persistence."
+          />
+          <div className="icon-stat-row">
+            <div>
+              <Crown size={18} />
+              <span>Live source visibility</span>
+            </div>
+            <div>
+              <Activity size={18} />
+              <span>Fallback awareness</span>
+            </div>
+            <div>
+              <Sparkles size={18} />
+              <span>Quality surfacing</span>
+            </div>
+            <div>
+              <Star size={18} />
+              <span>Operational honesty</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="risk-section">
+        <div className="risk-section__copy">
+          <SectionHeading
+            title="Readiness before monetization"
+            description="A professional SaaS should not sell broken flows. Payment health, pack compliance, and provider configuration now sit in the operating story."
+          />
+          <ul className="check-list">
+            <li>
+              <CheckCircle2 size={18} />
+              Provider status is visible from the admin API Center
+            </li>
+            <li>
+              <CheckCircle2 size={18} />
+              Pack inconsistencies are surfaced instead of hidden in marketing copy
+            </li>
+            <li>
+              <CheckCircle2 size={18} />
+              Payment providers are audited for missing configuration
+            </li>
+            <li>
+              <CheckCircle2 size={18} />
+              Fake performance and fictional signal claims are being removed
+            </li>
+          </ul>
+        </div>
+        <div className="risk-overview-grid">
+          <article>
+            <span>Frontend status</span>
+            <strong>Rebuilt</strong>
+            <small>Premium UI with audit-first flows</small>
+          </article>
+          <article>
+            <span>Data layer</span>
+            <strong>Live</strong>
+            <small>Fallback chain visible</small>
+          </article>
+          <article>
+            <span>Payments</span>
+            <strong>Audit only</strong>
+            <small>Real checkout still incomplete</small>
+          </article>
+          <article>
+            <span>Backend</span>
+            <strong>Blocked</strong>
+            <small>Laravel snapshot incomplete</small>
+          </article>
+        </div>
+      </section>
+
+      <section className="pricing-section" id="pricing">
+        <SectionHeading
+          title="Pack structure under review"
+          description="The commercial offer is now aligned to FREE, PRO, EXPERT, and INSTITUTIONNEL while entitlement enforcement is audited explicitly."
+        />
+        <div className="pricing-grid">
+          {plans.map((plan) => (
+            <article key={plan.name} className={`pricing-card${plan.featured ? " is-featured" : ""}`}>
+              <div className="pricing-card__header">
+                <div>
+                  <h3>{plan.name}</h3>
+                  <strong>{plan.price}</strong>
+                  <span>{plan.price === "Custom" ? "" : "/month"}</span>
+                </div>
+                {plan.featured ? <span className="featured-pill">Current Focus</span> : null}
+              </div>
+              <p>{plan.description}</p>
+              <ul>
+                {plan.bullets.map((bullet) => (
+                  <li key={bullet}>
+                    <CheckCircle2 size={16} />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+              <button className={plan.featured ? "primary-button" : "secondary-button"}>Audit {plan.name}</button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mobile-admin-section" id="resources">
+        <div className="mobile-preview">
+          <div className="phone-card phone-card--left">
+            <div className="phone-card__notch" />
+            <span>Data quality</span>
+            <strong>14 live assets</strong>
+            <div className="phone-chart" />
+          </div>
+          <div className="phone-card phone-card--right">
+            <div className="phone-card__notch" />
+            <span>Audit modules</span>
+            <strong>Ops center</strong>
+            <ul className="phone-list">
+              <li>API Center</li>
+              <li>Payments Audit</li>
+              <li>Pack Compliance</li>
+              <li>Platform Health</li>
+            </ul>
+          </div>
+        </div>
+        <div className="mobile-admin-section__copy">
+          <SectionHeading
+            title="Operate like a real SaaS."
+            description="The platform now prioritizes verifiable operations: live market provenance, provider health, payment readiness, and explicit backend blockers."
+            action={
+              <Link className="text-link" to="/admin">
+                Open admin ops <ArrowRight size={16} />
+              </Link>
+            }
+          />
+          <div className="store-row">
+            <button className="store-button">API Center</button>
+            <button className="store-button">Data Quality</button>
+          </div>
+
+          <div className="admin-preview-card" id="company">
+            <div className="admin-preview-card__header">
+              <div>
+                <span>Admin Ops</span>
+                <strong>Production readiness audit</strong>
+              </div>
+              <Link to="/admin" className="text-link">
+                Open Admin <ChevronRight size={16} />
+              </Link>
+            </div>
+            <div className="admin-preview-card__stats">
+              <article>
+                <span>Provider chain</span>
+                <strong>4 tiers</strong>
+                <small>Twelve → Finnhub → Alpha → Yahoo</small>
+              </article>
+              <article>
+                <span>Payment rails</span>
+                <strong>3 audited</strong>
+                <small>Stripe, PayPal, Bancontact</small>
+              </article>
+              <article>
+                <span>Pack families</span>
+                <strong>4 reviewed</strong>
+                <small>FREE, PRO, EXPERT, INSTITUTIONNEL</small>
+              </article>
+              <article>
+                <span>Backend truth</span>
+                <strong>Visible</strong>
+                <small>Blockers surfaced, not hidden</small>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="final-cta">
+        <h2>Ready to professionalize XTrendAI?</h2>
+        <p>Open the audit dashboard, validate the providers, and turn each commercial promise into an operationally verifiable capability.</p>
+        <div className="landing-hero__cta">
+          <Link className="primary-button" to="/dashboard">
+            Open Audit Dashboard
+          </Link>
+          <Link className="secondary-button" to="/admin">
+            Open Admin Ops
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }

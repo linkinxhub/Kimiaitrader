@@ -1,10 +1,33 @@
-import { Suspense } from "react";
-import { RouterProvider } from "react-router-dom";
-import { router } from "@/router";
+import { Suspense, lazy } from "react";
+import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
+import { AppShell } from "@/components/AppShell";
+
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const SignalsPage = lazy(() => import("@/pages/SignalsPage"));
+const GoldPage = lazy(() => import("@/pages/GoldPage"));
+const QualityPage = lazy(() => import("@/pages/CalendarPage"));
+const AdminPage = lazy(() => import("@/pages/AdminPage"));
+
+const router = createHashRouter([
+  { path: "/", element: <LandingPage /> },
+  {
+    path: "/",
+    element: <AppShell />,
+    children: [
+      { path: "/dashboard", element: <DashboardPage /> },
+      { path: "/signals", element: <SignalsPage /> },
+      { path: "/gold", element: <GoldPage /> },
+      { path: "/quality", element: <QualityPage /> },
+      { path: "/admin", element: <AdminPage /> },
+    ],
+  },
+  { path: "*", element: <Navigate to="/" replace /> },
+]);
 
 export function App() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 p-8 text-slate-200">Chargement de XTrendAI Pro...</div>}>
+    <Suspense fallback={<div className="app-loading">Loading XTrendAI Pro...</div>}>
       <RouterProvider router={router} />
     </Suspense>
   );
