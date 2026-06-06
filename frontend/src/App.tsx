@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { createHashRouter, Navigate, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
@@ -9,7 +9,7 @@ const GoldPage = lazy(() => import("@/pages/GoldPage"));
 const QualityPage = lazy(() => import("@/pages/CalendarPage"));
 const AdminPage = lazy(() => import("@/pages/AdminPage"));
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
   {
     path: "/",

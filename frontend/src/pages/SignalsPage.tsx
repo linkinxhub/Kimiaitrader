@@ -1,5 +1,6 @@
 import { SectionHeading } from "@/components/SectionHeading";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatPercent, formatTimestamp } from "@/lib/formatters";
 import type { MarketSnapshot } from "@/types/audit";
 
 export default function SignalsPage() {
@@ -34,14 +35,12 @@ export default function SignalsPage() {
                 </div>
                 <div>
                   <small>Timestamp</small>
-                  <strong>{asset.asOf ?? "Unavailable"}</strong>
+                  <strong>{formatTimestamp(asset.asOf)}</strong>
                 </div>
                 <div>
                   <small>Change</small>
                   <strong>
-                    {asset.changePercent == null
-                      ? "Unavailable"
-                      : `${asset.changePercent >= 0 ? "+" : ""}${asset.changePercent.toFixed(2)}%`}
+                    {asset.changePercent == null ? "Unavailable" : formatPercent(asset.changePercent)}
                   </strong>
                 </div>
               </div>

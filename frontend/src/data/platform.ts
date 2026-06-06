@@ -15,6 +15,7 @@ import {
   WalletCards,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { formatCompactCurrency, formatCurrency } from "@/lib/formatters";
 
 export type Tone = "bullish" | "bearish" | "neutral" | "premium";
 
@@ -87,7 +88,8 @@ export interface AlertItem {
 
 export interface Plan {
   name: string;
-  price: string;
+  price: number | null;
+  priceLabel?: string;
   description: string;
   featured?: boolean;
   bullets: string[];
@@ -307,26 +309,27 @@ export const alertItems: AlertItem[] = [
 export const plans: Plan[] = [
   {
     name: "FREE",
-    price: "$0",
+    price: 0,
     description: "Monitor the live market fallback layer and discover the platform foundations.",
     bullets: ["Live market board", "Provider fallback visibility", "1 workspace", "Audit overview"],
   },
   {
     name: "PRO",
-    price: "$79",
+    price: 79,
     description: "Operational live data, premium gold monitoring, and advanced workspace access.",
     featured: true,
     bullets: ["Everything in FREE", "Gold desk access", "Advanced watchlists", "Priority support"],
   },
   {
     name: "EXPERT",
-    price: "$199",
+    price: 199,
     description: "Expanded monitoring and control surfaces for serious operators and teams.",
     bullets: ["Everything in PRO", "Operational audit center", "Advanced API oversight", "Dedicated onboarding"],
   },
   {
     name: "INSTITUTIONNEL",
-    price: "Custom",
+    price: null,
+    priceLabel: "Custom",
     description: "Custom governance, provider strategy, and enterprise operating requirements.",
     bullets: ["Everything in EXPERT", "Institutional governance", "Custom compliance flows", "Shared success planning"],
   },
@@ -335,13 +338,13 @@ export const plans: Plan[] = [
 export const adminStats: AdminStat[] = [
   { label: "Total users", value: "1,248", delta: "+12.9%" },
   { label: "Active traders", value: "842", delta: "+8.3%" },
-  { label: "Monthly recurring revenue", value: "$24.6K", delta: "+15.7%" },
+  { label: "Monthly recurring revenue", value: formatCompactCurrency(24600), delta: "+15.7%" },
   { label: "Signal deliveries", value: "9.3M", delta: "+11.2%" },
 ];
 
 export const auditRows: AuditRow[] = [
-  { actor: "John Doe", action: "Deposit approved", scope: "USDT", amount: "$10,000.00", time: "2m ago" },
-  { actor: "System", action: "Pro renewal processed", scope: "Stripe", amount: "$79.00", time: "8m ago" },
+  { actor: "John Doe", action: "Deposit approved", scope: "USDT", amount: formatCurrency(10000, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), time: "2m ago" },
+  { actor: "System", action: "Pro renewal processed", scope: "Stripe", amount: formatCurrency(79, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), time: "8m ago" },
   { actor: "Risk Bot", action: "Drawdown lock triggered", scope: "Expert plan", amount: "-", time: "13m ago" },
   { actor: "Admin", action: "Telegram alerts enabled", scope: "Workspace 18", amount: "-", time: "27m ago" },
 ];
@@ -368,7 +371,7 @@ export const aiReasoning = [
 ];
 
 export const dashboardCards = [
-  { label: "Account Balance", value: "$125,430.68", icon: WalletCards },
+  { label: "Account Balance", value: formatCurrency(125430.68, { minimumFractionDigits: 2, maximumFractionDigits: 2 }), icon: WalletCards },
   { label: "Daily Risk", value: "0.45%", icon: ShieldCheck },
   { label: "Sharpe Ratio", value: "1.78", icon: TrendingUp },
   { label: "AI Modules Online", value: "12", icon: Bot },

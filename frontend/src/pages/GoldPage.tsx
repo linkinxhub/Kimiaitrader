@@ -2,12 +2,8 @@ import { Crown } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { SectionHeading } from "@/components/SectionHeading";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatMarketPrice, formatTimestamp } from "@/lib/formatters";
 import type { MarketSnapshot } from "@/types/audit";
-
-function formatPrice(value: number | null) {
-  if (value == null) return "Unavailable";
-  return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
-}
 
 export default function GoldPage() {
   const snapshot = useRemoteJson<MarketSnapshot>("/api/market/snapshot", 60000);
@@ -39,10 +35,10 @@ export default function GoldPage() {
           </div>
           <div className="gold-desk-stack">
             {[
-              ["Live price", formatPrice(gold?.price ?? null)],
+              ["Live price", formatMarketPrice(gold?.price ?? null, "XAU/USD")],
               ["Source", gold?.source ?? "Unavailable"],
               ["Quality", gold?.quality ?? "unavailable"],
-              ["Last update", gold?.asOf ?? "Unavailable"],
+              ["Last update", formatTimestamp(gold?.asOf ?? null)],
             ].map(([label, value]) => (
               <article key={label} className="stat-card">
                 <span>{label}</span>

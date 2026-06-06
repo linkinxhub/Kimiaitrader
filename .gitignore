@@ -8,6 +8,7 @@ frontend/dist/
 frontend/.vercel/
 frontend/vite.log
 frontend/qa-screens/
+*.tsbuildinfo
 
 .DS_Store
 Thumbs.db

@@ -1,14 +1,49 @@
 import { SectionHeading } from "@/components/SectionHeading";
 import { auditModules, packMatrix } from "@/data/audit";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatTimestamp } from "@/lib/formatters";
 import type { PaymentHealthResponse, ProviderHealthResponse } from "@/types/audit";
 
 export default function AdminPage() {
   const providers = useRemoteJson<ProviderHealthResponse>("/api/admin/providers-health", 120000);
   const payments = useRemoteJson<PaymentHealthResponse>("/api/admin/payments-health", 120000);
+  const providerRows = providers.data?.providers ?? [];
+  const paymentRows = payments.data?.providers ?? [];
+
+  const connectedProviders = providerRows.filter((provider) => provider.status === "connected").length;
+  const blockedProviders = providerRows.length - connectedProviders;
+  const readyPayments = paymentRows.filter((provider) => provider.status === "connected").length;
+  const blockedPayments = paymentRows.length - readyPayments;
 
   return (
     <div className="page-grid">
+      <section className="admin-stat-grid">
+        <article className="stat-card">
+          <span>Provider connections</span>
+          <strong>
+            {connectedProviders}/{providerRows.length || 4}
+          </strong>
+          <small>Live data sources currently connected</small>
+        </article>
+        <article className="stat-card">
+          <span>Provider blockers</span>
+          <strong>{blockedProviders}</strong>
+          <small>Missing keys, secrets, or degraded provider tiers</small>
+        </article>
+        <article className="stat-card">
+          <span>Payment readiness</span>
+          <strong>
+            {readyPayments}/{paymentRows.length || 3}
+          </strong>
+          <small>Checkout providers fully configured</small>
+        </article>
+        <article className="stat-card">
+          <span>Last provider audit</span>
+          <strong>{formatTimestamp(providers.data?.fetchedAt ?? null)}</strong>
+          <small>Serverless health snapshot timestamp</small>
+        </article>
+      </section>
+
       <section className="panel">
         <SectionHeading
           title="Admin API Center"
@@ -29,15 +64,24 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody>
-              {(providers.data?.providers ?? []).map((provider) => (
+              {providerRows.map((provider) => (
                 <tr key={provider.name}>
-                  <td>{provider.name}</td>
-                  <td>{provider.status}</td>
+                  <td>
+                    <div className="table-cell-stack">
+                      <strong>{provider.name}</strong>
+                      <span>{provider.note}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`status-pill${provider.status === "connected" ? " is-live" : " is-blocked"}`}>
+                      {provider.status}
+                    </span>
+                  </td>
                   <td>{provider.mode}</td>
                   <td>{provider.hasKey ? "Configured" : "Missing"}</td>
                   <td>{provider.hasSecret ? "Configured" : "N/A"}</td>
                   <td>{provider.responseTimeMs}ms</td>
-                  <td>{provider.lastError ?? "None"}</td>
+                  <td>{provider.lastError ?? provider.note}</td>
                 </tr>
               ))}
             </tbody>
@@ -52,7 +96,7 @@ export default function AdminPage() {
           description="Configuration audit for Stripe, PayPal, and Bancontact. Missing credentials are exposed here instead of being hidden behind a fake checkout path."
         />
         <div className="admin-stat-grid">
-          {(payments.data?.providers ?? []).map((provider) => (
+          {paymentRows.map((provider) => (
             <article key={provider.name} className="stat-card">
               <span>{provider.name}</span>
               <strong>{provider.status}</strong>
@@ -60,9 +104,14 @@ export default function AdminPage() {
               <p className="muted-copy">
                 Public key: {provider.hasPublicKey ? "yes" : "no"} | Secret: {provider.hasSecretKey ? "yes" : "no"}
               </p>
+              <p className="muted-copy">{provider.note}</p>
             </article>
           ))}
         </div>
+        <p className="muted-copy admin-footnote">
+          Payment blockers detected: {blockedPayments}. Real subscription activation still depends on backend webhooks,
+          entitlement persistence, and secure billing state.
+        </p>
       </section>
 
       <section className="panel">

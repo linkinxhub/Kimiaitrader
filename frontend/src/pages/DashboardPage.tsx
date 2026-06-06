@@ -3,25 +3,8 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { SectionHeading } from "@/components/SectionHeading";
 import { auditModules } from "@/data/audit";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatMarketPrice, formatPercent, formatTimestamp } from "@/lib/formatters";
 import type { MarketSnapshot, ProviderHealthResponse } from "@/types/audit";
-
-function formatPrice(value: number | null, code: string) {
-  if (value == null) return "Unavailable";
-  const digits = code.includes("/") || code === "BTC" || code === "ETH" || code === "SOL" || code === "BNB" ? 4 : 2;
-  return value.toLocaleString("en-US", { maximumFractionDigits: digits });
-}
-
-function formatTimestamp(value: string | null) {
-  if (!value) return "Unavailable";
-  return new Intl.DateTimeFormat("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "UTC",
-  }).format(new Date(value));
-}
 
 export default function DashboardPage() {
   const snapshot = useRemoteJson<MarketSnapshot>("/api/market/snapshot", 60000);
@@ -38,11 +21,11 @@ export default function DashboardPage() {
           <div className="panel__header">
             <div>
               <span className="panel__kicker">EUR/USD live feed</span>
-              <h2>{formatPrice(eurusd?.price ?? null, "EUR/USD")}</h2>
+              <h2>{formatMarketPrice(eurusd?.price ?? null, "EUR/USD")}</h2>
             </div>
             <div className="panel-meta">
               <strong className={(eurusd?.changePercent ?? 0) >= 0 ? "is-up" : "is-down"}>
-                {eurusd?.changePercent == null ? "No change data" : `${eurusd.changePercent >= 0 ? "+" : ""}${eurusd.changePercent.toFixed(2)}%`}
+                {eurusd?.changePercent == null ? "No change data" : formatPercent(eurusd.changePercent)}
               </strong>
               <span>{eurusd?.source ?? "Unavailable"}</span>
             </div>
@@ -86,7 +69,7 @@ export default function DashboardPage() {
               <span className="tag-pill">Live gold</span>
               <h3>XAU/USD</h3>
             </div>
-            <strong className="gold-price">{formatPrice(xauusd?.price ?? null, "XAU/USD")}</strong>
+            <strong className="gold-price">{formatMarketPrice(xauusd?.price ?? null, "XAU/USD")}</strong>
           </div>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={snapshot.data?.charts["XAU/USD"] ?? []}>
@@ -177,7 +160,7 @@ export default function DashboardPage() {
                 <tr key={asset.code}>
                   <td>{asset.code}</td>
                   <td>{asset.category}</td>
-                  <td>{formatPrice(asset.price, asset.code)}</td>
+                  <td>{formatMarketPrice(asset.price, asset.code)}</td>
                   <td>{asset.source}</td>
                   <td>{asset.quality}</td>
                   <td>{formatTimestamp(asset.asOf)}</td>
@@ -215,7 +198,7 @@ export default function DashboardPage() {
             <div className="phone-preview__notch" />
             <div className="phone-preview__message">
               <strong>BTC source: {btc?.source ?? "Unavailable"}</strong>
-              <p>Price: {formatPrice(btc?.price ?? null, "BTC")}</p>
+              <p>Price: {formatMarketPrice(btc?.price ?? null, "BTC")}</p>
               <span>Quality: {btc?.quality ?? "unavailable"}</span>
               <em>Updated: {formatTimestamp(btc?.asOf ?? null)}</em>
             </div>

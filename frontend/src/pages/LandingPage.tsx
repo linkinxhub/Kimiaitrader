@@ -15,18 +15,13 @@ import { BrandMark } from "@/components/BrandMark";
 import { SectionHeading } from "@/components/SectionHeading";
 import { featureCards, landingHighlights, landingQuickBadges, plans, trustedStats } from "@/data/platform";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatCurrency, formatMarketPrice } from "@/lib/formatters";
 import type { MarketSnapshot } from "@/types/audit";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0 },
 };
-
-function formatPrice(value: number | null, code: string) {
-  if (value == null) return "Unavailable";
-  const digits = code.includes("/") ? 4 : 2;
-  return value.toLocaleString("en-US", { maximumFractionDigits: digits });
-}
 
 export default function LandingPage() {
   const snapshot = useRemoteJson<MarketSnapshot>("/api/market/snapshot", 60000);
@@ -140,7 +135,7 @@ export default function LandingPage() {
             heroAssets.map((item) => (
               <div className="hero-market-card" key={item.code}>
                 <span>{item.code}</span>
-                <strong>{formatPrice(item.price, item.code)}</strong>
+                <strong>{formatMarketPrice(item.price, item.code)}</strong>
                 <em className={(item.changePercent ?? 0) >= 0 ? "is-up" : "is-down"}>
                   {item.changePercent == null ? item.source : `${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%`}
                 </em>
@@ -347,7 +342,7 @@ export default function LandingPage() {
       <section className="pricing-section" id="pricing">
         <SectionHeading
           title="Pack structure under review"
-          description="The commercial offer is now aligned to FREE, PRO, EXPERT, and INSTITUTIONNEL while entitlement enforcement is audited explicitly."
+          description="The commercial offer is now aligned to FREE, PRO, EXPERT, and INSTITUTIONNEL with euro-denominated pricing and explicit entitlement auditing."
         />
         <div className="pricing-grid">
           {plans.map((plan) => (
@@ -355,8 +350,8 @@ export default function LandingPage() {
               <div className="pricing-card__header">
                 <div>
                   <h3>{plan.name}</h3>
-                  <strong>{plan.price}</strong>
-                  <span>{plan.price === "Custom" ? "" : "/month"}</span>
+                  <strong>{plan.priceLabel ?? formatCurrency(plan.price)}</strong>
+                  <span>{plan.price == null ? "" : "/month"}</span>
                 </div>
                 {plan.featured ? <span className="featured-pill">Current Focus</span> : null}
               </div>
@@ -373,6 +368,10 @@ export default function LandingPage() {
             </article>
           ))}
         </div>
+        <p className="pricing-footnote">
+          All public subscription amounts are now normalized in EUR. Institutional scope remains quoted manually until
+          backend entitlement and billing enforcement are complete.
+        </p>
       </section>
 
       <section className="mobile-admin-section" id="resources">

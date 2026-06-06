@@ -4,6 +4,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { BrandMark } from "@/components/BrandMark";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
 import { navItems } from "@/data/platform";
+import { formatMarketPrice, formatPercent } from "@/lib/formatters";
 import type { MarketSnapshot } from "@/types/audit";
 
 function SidebarLink({ label, path, icon: Icon }: (typeof navItems)[number]) {
@@ -79,9 +80,9 @@ export function AppShell() {
             tickerItems.map((item) => (
               <div className="ticker-chip" key={item.code}>
                 <span>{item.code}</span>
-                <strong>{item.price?.toLocaleString("en-US", { maximumFractionDigits: 4 }) ?? "Unavailable"}</strong>
+                <strong>{formatMarketPrice(item.price, item.code)}</strong>
                 <em className={(item.changePercent ?? 0) >= 0 ? "is-up" : "is-down"}>
-                  {item.changePercent == null ? item.quality : `${item.changePercent >= 0 ? "+" : ""}${item.changePercent.toFixed(2)}%`}
+                  {item.changePercent == null ? item.quality : formatPercent(item.changePercent)}
                 </em>
               </div>
             ))

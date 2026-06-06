@@ -1,5 +1,6 @@
 import { SectionHeading } from "@/components/SectionHeading";
 import { useRemoteJson } from "@/hooks/useRemoteJson";
+import { formatTimestamp } from "@/lib/formatters";
 import type { MarketSnapshot } from "@/types/audit";
 
 export default function CalendarPage() {
@@ -34,8 +35,8 @@ export default function CalendarPage() {
                   <td>{asset.status}</td>
                   <td>{asset.source}</td>
                   <td>{asset.quality}</td>
-                  <td>{asset.asOf ?? "Unavailable"}</td>
-                  <td>{asset.lastUpdated}</td>
+                  <td>{formatTimestamp(asset.asOf)}</td>
+                  <td>{formatTimestamp(asset.lastUpdated)}</td>
                 </tr>
               ))}
             </tbody>
