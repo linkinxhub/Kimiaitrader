@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.vercel/
+vite.log
+qa-screens/
+*.log
+
+.DS_Store
+Thumbs.db
