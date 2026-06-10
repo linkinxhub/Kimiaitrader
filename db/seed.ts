@@ -1,5 +1,5 @@
-import { getDb } from "../server/queries/connection";
-import { packs } from "./schema";
+import { getDb } from "../server/queries/connection.js";
+import { packs } from "./schema.js";
 
 async function seed() {
   const db = getDb();

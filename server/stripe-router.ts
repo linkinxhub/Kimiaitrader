@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createRouter, publicQuery, authedQuery } from "./middleware";
-import { findPackById } from "./queries/pack";
-import { createPayment } from "./queries/payment";
-import { createSubscription } from "./queries/subscription";
+import { createRouter, publicQuery, authedQuery } from "./middleware.js";
+import { findPackById } from "./queries/pack.js";
+import { createPayment } from "./queries/payment.js";
+import { createSubscription } from "./queries/subscription.js";
 import Stripe from "stripe";
 
 // Initialize Stripe with secret key

@@ -1,5 +1,5 @@
-import { env } from "./lib/env";
-import app from "./app";
+import { env } from "./lib/env.js";
+import app from "./app.js";
 
 if (env.isProduction) {
   const { serve } = await import("@hono/node-server");

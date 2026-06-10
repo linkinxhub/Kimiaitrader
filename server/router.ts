@@ -1,9 +1,9 @@
-import { authRouter } from "./auth-router";
-import { packRouter } from "./pack-router";
-import { subscriptionRouter } from "./subscription-router";
-import { stripeRouter } from "./stripe-router";
-import { aiRouter } from "./ai-router";
-import { createRouter, publicQuery } from "./middleware";
+import { authRouter } from "./auth-router.js";
+import { packRouter } from "./pack-router.js";
+import { subscriptionRouter } from "./subscription-router.js";
+import { stripeRouter } from "./stripe-router.js";
+import { aiRouter } from "./ai-router.js";
+import { createRouter, publicQuery } from "./middleware.js";
 
 export const appRouter = createRouter({
   ping: publicQuery.query(() => ({ ok: true, ts: Date.now() })),

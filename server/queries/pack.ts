@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import { getDb } from "./connection";
-import { packs } from "@db/schema";
+import { getDb } from "./connection.js";
+import { packs } from "../../db/schema.js";
 
 export async function findAllPacks() {
   const db = getDb();

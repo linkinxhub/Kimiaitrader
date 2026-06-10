@@ -3,14 +3,14 @@
  */
 
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
+import { createRouter, publicQuery } from "./middleware.js";
 import {
   analyzeWithOpenAI,
   analyzeWithGemini,
   analyzeWithBoth,
   getAvailableProviders,
   type MarketDataInput,
-} from "./ai-service";
+} from "./ai-service.js";
 
 export const aiRouter = createRouter({
   /** Get available AI providers status */

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { createRouter, publicQuery } from "./middleware";
-import { findAllPacks, findPackBySlug, findPackById } from "./queries/pack";
+import { createRouter, publicQuery } from "./middleware.js";
+import { findAllPacks, findPackBySlug, findPackById } from "./queries/pack.js";
 
 export const packRouter = createRouter({
   list: publicQuery.query(async () => {

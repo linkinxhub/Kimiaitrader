@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
-import { getDb } from "./connection";
-import { payments } from "@db/schema";
+import { getDb } from "./connection.js";
+import { payments } from "../../db/schema.js";
 
 export async function findUserPayments(userId: number) {
   const db = getDb();

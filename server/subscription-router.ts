@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createRouter, authedQuery } from "./middleware";
+import { createRouter, authedQuery } from "./middleware.js";
 import {
   findUserSubscription,
   findAllUserSubscriptions,
   createSubscription,
   cancelSubscription,
-} from "./queries/subscription";
-import { getDb } from "./queries/connection";
-import { users } from "@db/schema";
+} from "./queries/subscription.js";
+import { getDb } from "./queries/connection.js";
+import { users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
 export const subscriptionRouter = createRouter({
