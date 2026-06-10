@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Frontend - Nginx serving static app
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xtrendai-frontend
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - xtrendai-network
+
+  # Backend - Node.js API server
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: xtrendai-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - APP_ID=${APP_ID}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=mysql://xtrendai:${DB_PASSWORD}@db:3306/xtrendai
+      - KIMI_AUTH_URL=${KIMI_AUTH_URL}
+      - KIMI_OPEN_URL=${KIMI_OPEN_URL}
+      - OWNER_UNION_ID=${OWNER_UNION_ID}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - STRIPE_PRICE_PRO_MONTHLY=${STRIPE_PRICE_PRO_MONTHLY}
+      - STRIPE_PRICE_PRO_YEARLY=${STRIPE_PRICE_PRO_YEARLY}
+      - STRIPE_PRICE_EXPERT_MONTHLY=${STRIPE_PRICE_EXPERT_MONTHLY}
+      - STRIPE_PRICE_EXPERT_YEARLY=${STRIPE_PRICE_EXPERT_YEARLY}
+      - STRIPE_PRICE_INST_MONTHLY=${STRIPE_PRICE_INST_MONTHLY}
+      - STRIPE_PRICE_INST_YEARLY=${STRIPE_PRICE_INST_YEARLY}
+      - PORT=3000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - xtrendai-network
+
+  # Database - MySQL
+  db:
+    image: mysql:8.0
+    container_name: xtrendai-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=xtrendai
+      - MYSQL_USER=xtrendai
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - xtrendai-network
+
+  # Redis - Cache & sessions
+  redis:
+    image: redis:7-alpine
+    container_name: xtrendai-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - xtrendai-network
+
+  # (Optional) Stripe CLI for local webhook testing
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: xtrendai-stripe
+    command: listen --forward-to backend:3000/api/webhooks/stripe --api-key ${STRIPE_SECRET_KEY}
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+    profiles:
+      - dev
+    networks:
+      - xtrendai-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  xtrendai-network:
+    driver: bridge

@@ -1,0 +1,134 @@
+/* Trading Platform Custom Styles */
+
+/* Scrollbar hiding for ticker */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for main content */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Glassmorphism effects */
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Glow effects for signals */
+.signal-glow-buy {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+}
+
+.signal-glow-sell {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+  }
+}
+
+.pulse-live {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card hover effects */
+.trading-card {
+  transition: all 0.3s ease;
+}
+
+.trading-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Price change animation */
+@keyframes price-up {
+  0% { color: #10b981; }
+  50% { color: #34d399; }
+  100% { color: #10b981; }
+}
+
+@keyframes price-down {
+  0% { color: #ef4444; }
+  50% { color: #f87171; }
+  100% { color: #ef4444; }
+}
+
+.price-up {
+  animation: price-up 1s ease;
+}
+
+.price-down {
+  animation: price-down 1s ease;
+}
+
+/* Chart tooltip styling */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* Grid pattern background */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Smooth transitions - scoped to interactive elements only */
+button, a, input, select, textarea {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+/* Focus states */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

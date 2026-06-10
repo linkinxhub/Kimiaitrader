@@ -1,0 +1,85 @@
+import { Routes, Route, Navigate } from 'react-router';
+import { useAuth } from '@/hooks/useAuth';
+import { Layout } from '@/components/Layout';
+
+// Public pages (no sidebar)
+import LandingPage from '@/pages/LandingPage';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+
+// Billing (special — auth needed but payment may be pending)
+import Billing from '@/pages/Billing';
+
+// App pages (with sidebar)
+import Dashboard from '@/pages/Dashboard';
+import XAUPremium from '@/pages/XAUPremium';
+import Signals from '@/pages/Signals';
+import Technical from '@/pages/Technical';
+import CalendarPage from '@/pages/CalendarPage';
+import History from '@/pages/History';
+import RiskPage from '@/pages/RiskPage';
+import Subscription from '@/pages/Subscription';
+import SettingsPage from '@/pages/SettingsPage';
+import RadarOpportunities from '@/pages/RadarOpportunities';
+import SmartMoneyTracker from '@/pages/SmartMoneyTracker';
+import AIAssistant from '@/pages/AIAssistant';
+import IntelligenceCenter from '@/pages/IntelligenceCenter';
+import StrategyLab from '@/pages/StrategyLab';
+import AdminPanel from '@/pages/AdminPanel';
+import ApiCenter from '@/pages/ApiCenter';
+import Simulator from '@/pages/Simulator';
+
+import './App.css';
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isPaymentPending } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (isPaymentPending) return <Navigate to="/billing" replace />;
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isAdmin } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAdmin) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      {/* Public routes — NO sidebar */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* App routes — WITH sidebar */}
+      <Route element={<Layout />}>
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/xauusd" element={<ProtectedRoute><XAUPremium /></ProtectedRoute>} />
+        <Route path="/signals" element={<ProtectedRoute><Signals /></ProtectedRoute>} />
+        <Route path="/radar" element={<ProtectedRoute><RadarOpportunities /></ProtectedRoute>} />
+        <Route path="/smart-money" element={<ProtectedRoute><SmartMoneyTracker /></ProtectedRoute>} />
+        <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
+        <Route path="/intelligence" element={<ProtectedRoute><IntelligenceCenter /></ProtectedRoute>} />
+        <Route path="/strategy-lab" element={<ProtectedRoute><StrategyLab /></ProtectedRoute>} />
+        <Route path="/technical" element={<ProtectedRoute><Technical /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
+        <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+        <Route path="/risk" element={<ProtectedRoute><RiskPage /></ProtectedRoute>} />
+        <Route path="/billing" element={<Billing />} />
+        <Route path="/subscription" element={<Subscription />} />
+        <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+        <Route path="/simulator" element={<ProtectedRoute><Simulator /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+        <Route path="/api-center" element={<AdminRoute><ApiCenter /></AdminRoute>} />
+      </Route>
+    </Routes>
+  );
+}
+
+function App() {
+  return <AppRoutes />;
+}
+
+export default App;
